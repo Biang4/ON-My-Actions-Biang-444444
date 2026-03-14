@@ -1,32 +1,36 @@
 name: 自动push防止Actions自动停止
 
 on:
-    workflow_dispatch:
-    schedule:
-        - cron: '0 0 1,15 * *'
-    repository_dispatch:
-        types: start_action
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1,15 * *'
+  repository_dispatch:
+    types: [start_action]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id || github.actor == 'BlueSkyClouds'
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id || github.actor == 'BlueSkyClouds'
 
-        steps:
-            - name: Getting the repo
-              uses: actions/checkout@v3
+    steps:
+      - name: 克隆仓库（无 Node.js 警告）
+        run: |
+          git clone https://${{ github.repository_owner }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git repo
+          cd repo
+          git checkout script
 
-            - name: Re setting the url for `origin`
-              run: |
-                  git remote set-url origin https://${{ github.repository_owner }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-            - name: Adding git info
-              run: |
-                  git config --global user.name "BlueSkyClouds"
-                  git config --global user.email "blueskycloudsliao@gmail.com"
-            - name: Creating an empty commit
-              run: |
-                  git commit --allow-empty -m "Auto amazing commit"
+      - name: 配置Git（从Secrets读取，隐藏邮箱）
+        run: |
+          cd repo
+          git config user.name "${{ secrets.USER_NAME }}"
+          git config user.email "${{ secrets.USER_EMAIL }}"
 
-            - name: Finilly pushing the repo
-              run: |
-                  git push origin master
+      - name: 创建空提交
+        run: |
+          cd repo
+          git commit --allow-empty -m "Auto keep alive"
+
+      - name: 推送
+        run: |
+          cd repo
+          git push origin script
