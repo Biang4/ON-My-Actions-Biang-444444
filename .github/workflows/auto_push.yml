@@ -13,24 +13,20 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id || github.actor == 'BlueSkyClouds'
 
     steps:
-      - name: 克隆仓库（无 Node.js 警告）
-        run: |
-          git clone https://${{ github.repository_owner }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git repo
-          cd repo
-          git checkout script
+      - name: 克隆仓库（官方稳定方式）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: 配置Git（从Secrets读取，隐藏邮箱）
+      - name: 配置Git
         run: |
-          cd repo
           git config user.name "${{ secrets.USER_NAME }}"
           git config user.email "${{ secrets.USER_EMAIL }}"
 
       - name: 创建空提交
         run: |
-          cd repo
           git commit --allow-empty -m "Auto keep alive"
 
-      - name: 推送
+      - name: 推送到仓库
         run: |
-          cd repo
-          git push origin script
+          git push
