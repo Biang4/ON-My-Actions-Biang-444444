@@ -1,9 +1,9 @@
-requests
-rsa
-opencv-python
-pytz
-python-dateutil
-numpy
-chardet
-urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
-pycryptodome
+requests==2.31.0
+rsa==4.9
+opencv-python==4.8.1.78
+pytz==2024.1
+python-dateutil==2.8.2
+numpy==1.24.4
+chardet==5.2.0
+urllib3==1.26.20
+pycryptodome==3.20.0
