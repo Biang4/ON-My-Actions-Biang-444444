@@ -10,6 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete workflow runs
-        uses: GitRML/delete-workflow-runs@main
+        uses: Biang0/delete-workflow-runs@main
         with:
           retain_days: '3'
