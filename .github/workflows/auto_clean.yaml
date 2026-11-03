@@ -1,15 +1,19 @@
-name: 'workflows日志自动清理'
-
+name: workflows日志自动清理
 on:
   schedule:
-    - cron: '0 0 */3 * *'
+    - cron: '0 16 */3 * *'
   workflow_dispatch:
 
 jobs:
   del_workflow:
     runs-on: ubuntu-latest
     steps:
-      - name: Delete workflow runs
-        uses: GitRML/delete-workflow-runs@main
-        with:
-          retain_days: '3'
+      - name: Delete old workflow runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RETAIN_DAYS: 3
+        run: |
+          cutoff=$(date -d "$RETAIN_DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)
+          gh run list --created "<$cutoff" --json databaseId --limit 100 \
+            | jq -r '.[].databaseId' \
+            | xargs -I {} gh run delete {}
